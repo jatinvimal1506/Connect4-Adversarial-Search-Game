@@ -1,6 +1,5 @@
-# 🎮 Connect 4 Web Game with AI
+# 🎮 Connect 4 Web Game with Adverserial Search (Minimax and Expectiminimax)
 
-### Indian Institute of Technology, Palakkad
 
 This repository contains a full-stack, browser-based Connect 4 game. The project connects a custom Python AI engine to a lightweight web interface, allowing users to play matches against either a casual random bot or a smart computer opponent using multiple difficulty levels.
 
