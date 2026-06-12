@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Connect 4 - Active Arena</title>
+    <link style="text-align: center;" rel="stylesheet" href="{{ url_for('static', filename='main.css') }}?v=2.0">
+</head>
+<body>
+
+    <h1>Connect 4</h1>
+    
+    <div class="settings-bar">
+        Mode: <b>{{ mode }}</b> | Difficulty: <b>{{ difficulty }}</b>
+    </div>
+    
+    {% if winner %}
+        <h2 style="color: #2ecc71; margin-bottom: 15px;">🏆 {{ winner }}</h2>
+    {% else %}
+        <h3>Current Turn Focus: Player {{ turn }}</h3>
+    {% endif %}
+
+    <div class="btn-container">
+        {% for col_idx in range(7) %}
+            <form action="/move/{{ col_idx }}" method="POST">
+                <button type="submit" class="col-btn" {% if winner %}disabled{% endif %}>Drop</button>
+            </form>
+        {% endfor %}
+    </div>
+
+    <div class="board">
+        {% for row in current_board %}
+            <div class="row">
+                {% for cell in row %}
+                    <div class="cell {% if cell == 1 %}player1{% elif cell == 2 %}player2{% endif %}"></div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+
+    <br>
+    <a href="/reset" style="text-decoration: none;">
+        <button class="action-btn">Quit & Reset Game</button>
+    </a>
+
+</body>
+</html>

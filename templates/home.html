@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Connect 4 - Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}?v=2.0">
+</head>
+<body>
+
+    <div style="text-align: center; margin-top: 50px;">
+        <h1 style="font-size: 36px; margin-bottom: 5px;">Connect 4</h1>
+        <p style="color: #7f8c8d; font-size: 16px;">Select your opponent to begin the match</p>
+        
+        <br><br>
+
+        <form action="/choose_mode" method="POST" style="display: flex; flex-direction: column; align-items: center;">
+            
+            <div style="margin-bottom: 20px;">
+                <button type="submit" name="game_mode" value="human_vs_random" 
+                        style="padding: 18px; font-size: 18px; width: 280px; font-weight: bold; background-color: #3498db; color: white; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    Human vs Random Bot
+                </button>
+            </div>
+
+            <div>
+                <button type="submit" name="game_mode" value="human_vs_ai" 
+                        style="padding: 18px; font-size: 18px; width: 280px; font-weight: bold; background-color: #9b59b6; color: white; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    Human vs AI
+                </button>
+            </div>
+
+        </form>
+    </div>
+
+</body>
+</html>
