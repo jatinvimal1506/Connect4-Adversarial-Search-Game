@@ -301,7 +301,7 @@ class AIPlayer:
             total_rows = board.shape[0]
             total_columns = board.shape[1]
 
-            # 1. Horizontal Check (↔️)
+            # 1. Horizontal Check 
             for curr_row in range(total_rows):
                 for curr_col in range(total_columns - 3):
                     if board[curr_row][curr_col] == player and \
@@ -310,7 +310,7 @@ class AIPlayer:
                     board[curr_row][curr_col+3] == player: 
                         return True
 
-            # 2. Vertical Check (↕️)
+            # 2. Vertical Check 
             for curr_row in range(total_rows - 3):
                 for curr_col in range(total_columns):
                     if board[curr_row][curr_col] == player and \
@@ -327,7 +327,7 @@ class AIPlayer:
                     board[curr_row+3][curr_col] == player:
                         return True
 
-            # 3. Diagonal Down-Right Check (↘️)
+            # 3. Diagonal Down-Right Check 
             for curr_row in range(total_rows - 3):
                 for curr_col in range(total_columns - 3):
                     if board[curr_row][curr_col] == player and \
@@ -336,8 +336,7 @@ class AIPlayer:
                     board[curr_row+3][curr_col+3] == player:
                         return True
 
-            # 4. Diagonal Up-Right Check (↗️)
-            # We start at row index 3 up to 5, and subtract rows while adding columns
+            # 4. Diagonal Up-Right Check 
             for curr_row in range(3, total_rows):
                 for curr_col in range(total_columns - 3):
                     if board[curr_row][curr_col] == player and \

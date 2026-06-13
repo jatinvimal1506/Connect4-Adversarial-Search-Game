@@ -3,82 +3,69 @@ import numpy as np
 from player import AIPlayer,RandomPlayer #This will import classes from the other file that is player.py
 
 app = Flask(__name__)
-app.secret_key = 'connect4_advanced_secret_key' #secret game to remeber the game state
+app.secret_key = 'connect4_advanced_secret_key' #secret key to remeber the game state
 
 @app.route('/')
 def home():
     """
-    PAGE 1: The Landing Page.
-    This simply displays the home menu where players choose their mode.
+    This displays the home menu where players choose their mode.
     """
     return render_template('home.html')
 
 @app.route('/choose_mode', methods=['POST'])
 def choose_mode():
-    """
-    KADAM 1: Yeh chalega jab aap Home page par button dabaoge.
-    """
+    #This will run when we press a button on the home page - Random or AI 
     chosen_mode = request.form.get('game_mode')
     session['mode'] = chosen_mode
 
-    # Agar Smart AI chuna, toh difficulty wale page par bhejo
+    #If the chosen mode is AI go to difficulty page 
     if chosen_mode == 'human_vs_ai':
         return redirect(url_for('difficulty_page'))
+    
     else:
-        # Agar Random Bot chuna, toh difficulty ki zaroorat nahi hai, seedhe board banao
+        #Otherwise we can direclty yo the board game 
         session['difficulty'] = 'normal'
         return redirect(url_for('init_board'))
 
 @app.route('/difficulty')
 def difficulty_page():
-    """
-    PAGE 2: The Difficulty Selection Page.
-    This page only shows up if the user chose to play against the Smart AI.
-    """
+    #This is used to rediretc the user to the difficulty page when user clicks the Human vs AI 
+
     return render_template('difficulty.html')
 
 @app.route('/choose_difficulty', methods=['POST'])
 def choose_difficulty():
     """
-    KADAM 2: Yeh chalega jab aap Easy/Medium/Hard button dabaoge.
-    ⚠️ AGAR YAHAN GADBAD HOGI TOH GAME SCREEN NAHI DIKHEGI!
+    We will reach this page using the diffculty page to get the difficulty level and using that set the height
     """
-    # HTML button se 'value' uthao ('easy', 'medium', or 'hard')
+    
     chosen_level = request.form.get('difficulty_level')
     
-    # Locker me bacha lo
+    #Save in the session 
     session['difficulty'] = chosen_level
-    
-    # 🔥 YAHA CHECK KARO: Yeh 'init_board' par hi bhejna chahiye!
-    # Agar yahan galti se 'home' ya 'choose_mode' likha hoga, toh aap gol-gol ghumte rahoge!
 
-    return redirect(url_for('init_board'))
+    return redirect(url_for('init_board')) #Once evething is decided we can go to the board
 
 @app.route('/init_board')
 def init_board():
     """
-    BACKEND PROCESSOR FOR THE GRID:
-    This initializes a clean game environment inside the locker.
+    Backend work for board intalilsaiton
     """
-    # Create a fresh 6x7 numpy matrix array of 0s
     blank_board = np.zeros((6, 7), dtype=int)
     
-    # Convert it to a standard Python list so our session locker can read it safely
+    # Convert it to a standard Python list as session can only understans list 
     session['board'] = blank_board.tolist()
     
     session['winner'] = None
-    # Set Player 1 (Human) to start first
+    #Set the turn of the human
     session['turn'] = 1
     
-    # Send them directly to the active gameplay arena screen!
+    # Send them directly to the active board screen
     return redirect(url_for('game_page'))
 
 @app.route('/game')
 def game_page():
-    """
-    PAGE 3: The Play Screen.
-    Renders your visual blue game board grid using the saved session data.
-    """
+    #The actual game screen where players play
     if 'board' not in session:
         return redirect(url_for('home'))
 
@@ -92,8 +79,7 @@ def game_page():
 @app.route('/reset')
 def reset():
     """
-    THE CLEAR BUTTON:
-    Empties the session locker entirely and boots them back to the landing page.
+    If the user presses the button Quit redirect to the home page 
     """
     session.clear()
     return redirect(url_for('home'))
@@ -101,22 +87,17 @@ def reset():
 @app.route('/move/<int:col>', methods=['POST'])
 def make_move(col):
     """
-    THE CENTRAL GAME LOOP PROCESSOR:
-    Runs when a human clicks a 'Drop' button. Then automatically triggers the bot's turn.
+    Runs when a human clicks a Drop button. Then automatically triggers the AI or Bot's turn .
     """
-    # 1. Pull the board out of the locker and immediately force it to be integers
     board_np = np.array(session['board'], dtype=int)
     
-    # Force the current turn variable to be a strict integer (avoids text string bugs)
     current_player = int(session['turn'])
 
-    # Create our game utility handler pointing to the integer player value
-    game_utils = AIPlayer(player_number=current_player)
+    game_utils = AIPlayer(player_number=current_player) #import game utility from AI Class form other file
 
-    # --- HUMAN TURN (PLAYER 1) ---
     valid_cols = game_utils.get_valid_columns(board_np)
     if col not in valid_cols:
-        return redirect(url_for('game_page')) # Column full! Ignore click safely.
+        return redirect(url_for('game_page')) 
 
     # Drop the human's piece (1) into the board matrix
     board_np = game_utils.put_piece_board(board_np, col, player=current_player)
@@ -124,16 +105,15 @@ def make_move(col):
     # Check if the human just won the game
     if game_utils.check_win(board_np, player=current_player):
         session['board'] = board_np.tolist()
-        session['winner'] = "Player 1 (You!) 🎉"
+        session['winner'] = "Player 1 (You!) "
         return redirect(url_for('game_page'))
         
     # Check if the board is completely full (Draw)
     if len(game_utils.get_valid_columns(board_np)) == 0:
         session['board'] = board_np.tolist()
-        session['winner'] = "Nobody! It's a Draw 🤝"
+        session['winner'] = "Nobody! It's a Draw "
         return redirect(url_for('game_page'))
 
-    # --- BOT COUNTER-ATTACK (PLAYER 2) ---
     # If the human didn't win or draw, it is now the Bot's turn!
     bot_player_num = 2
     
@@ -156,15 +136,15 @@ def make_move(col):
 
     # Check if the bot just won after making its move
     if game_utils.check_win(board_np, player=bot_player_num):
-        session['winner'] = "Player 2 (The Computer) 🤖"
+        session['winner'] = "Player 2 (The AI)"
     # Check if the bot's move caused a tie game
     elif len(game_utils.get_valid_columns(board_np)) == 0:
-        session['winner'] = "Nobody! It's a Draw 🤝"
+        session['winner'] = "Nobody! It's a Draw"
 
     # Save our final updated board state back into the session list locker
     session['board'] = board_np.tolist()
     
-    # 🌟 CRITICAL FIX: If nobody has won yet, switch the turn back to Player 1 (Human)
+    #If nobody has won yet, switch the turn back to Player 1 (Human)
     if 'winner' not in session or session['winner'] is None:
         session['turn'] = 1
     
