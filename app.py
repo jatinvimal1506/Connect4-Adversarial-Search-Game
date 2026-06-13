@@ -128,8 +128,8 @@ def make_move(col):
         bot = AIPlayer(player_number=bot_player_num)
         
         # Map our difficulty text choices directly to your Alpha-Beta recursion depth limits!
-        depth_map = {'easy': 2, 'medium': 4, 'hard': 6}
-        chosen_depth = depth_map.get(session['difficulty'], 4)
+        depth_map = {'easy': 1, 'medium': 3, 'hard': 5}
+        chosen_depth = depth_map.get(session['difficulty'], 5)
         
         bot_move = bot.get_alpha_beta_move(board_np, depth_limit=chosen_depth)
         board_np = game_utils.put_piece_board(board_np, bot_move, player=bot_player_num)
